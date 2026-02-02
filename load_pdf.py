@@ -1,7 +1,11 @@
 from langchain_community.document_loaders import PyPDFLoader
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Define the file path to the PDF
-doc_path = r"E:\cotton_rag\document\ICAR-CICR_Advisory Pest and Disease Management 2024.pdf"
+doc_path = os.getenv('DOCUMENT_PATH', './document/ICAR-CICR_Advisory Pest and Disease Management 2024.pdf')
 
 # Load the PDF using PyPDFLoader
 loader = PyPDFLoader(doc_path)

@@ -6,3 +6,4 @@ faiss-cpu
 numpy
 google-generativeai
 pypdf
+gradio>=4.0.0

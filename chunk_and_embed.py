@@ -4,9 +4,16 @@ from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
 import pickle
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Force CPU usage to avoid CUDA compatibility issues
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
 # Load PDF
-doc_path = r"E:\cotton_rag\document\ICAR-CICR_Advisory Pest and Disease Management 2024.pdf"
+doc_path = os.getenv('DOCUMENT_PATH', './document/ICAR-CICR_Advisory Pest and Disease Management 2024.pdf')
 loader = PyPDFLoader(doc_path)
 documents = loader.load()
 
@@ -20,7 +27,7 @@ chunks = text_splitter.create_documents([doc.page_content for doc in documents],
                                          metadatas=[doc.metadata for doc in documents])
 
 # Load embedding model
-embedder = SentenceTransformer('all-MiniLM-L6-v2')
+embedder = SentenceTransformer('all-MiniLM-L6-v2', device='cpu')
 
 # Create embeddings
 texts = [chunk.page_content for chunk in chunks]
