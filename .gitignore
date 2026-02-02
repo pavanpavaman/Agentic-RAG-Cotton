@@ -38,9 +38,7 @@ env/
 *.swo
 *~
 
-# Generated Files
-faiss_index.bin
-chunks.pkl
+# Generated Files - Test Results Only
 test_results_*.json
 
 # Frontend
