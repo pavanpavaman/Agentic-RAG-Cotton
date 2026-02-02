@@ -24,28 +24,39 @@ The FastAPI backend (Python API that handles AI responses)
 2. Select **"Deploy from GitHub repo"**
 3. Find and click **"pavanpavaman/Agentic-RAG-Cotton"**
 
-### Step 3: Configure Deployment
+### Step 3: Configure Deployment ⚠️ IMPORTANT
 
-#### Select Service Type
-1. Railway will ask what to deploy
-2. Click **"Add a new service"** 
-3. Select **"Backend"** or just continue
+After selecting your repository, you'll see the project page. **STOP THE BUILD FIRST!**
 
-#### Root Directory
-Railway might auto-detect the backend, but if needed:
-1. Go to **Settings** tab
-2. Find **"Root Directory"**
-3. Set to: `backend`
-4. Click **"Save"**
+#### Cancel the Initial Build
+1. Railway starts building automatically
+2. Click the **X** or **"Cancel"** button on the build that's running
+3. We need to configure settings first!
 
-#### Start Command
-1. In **Settings** tab
-2. Find **"Start Command"**
-3. Enter:
+#### Set Root Directory (CRITICAL)
+1. Click the **"Settings"** tab (top right)
+2. Scroll down to **"Source"** section
+3. Find **"Root Directory"** 
+4. Click **"Edit"** or the field
+5. Type: `backend`
+6. Press **Enter** or click **"Update"**
+
+#### Set Start Command
+1. Still in **Settings** tab
+2. Scroll to **"Deploy"** section
+3. Find **"Custom Start Command"**
+4. Click the field and enter:
    ```
    uvicorn main:app --host 0.0.0.0 --port $PORT
    ```
-4. Click **"Save"**
+5. Press **Enter** or click **"Update"**
+
+#### Set Python Version (Optional but Recommended)
+1. In **Settings** → **"Environment"** section
+2. Find **"Builder"** or **"Nixpacks Plan"**
+3. Click **"Add Variable"** if you see it
+4. Or scroll to **"Nixpacks Config File"**
+5. We'll use Railway's auto-detect for now
 
 ### Step 4: Add Environment Variables
 
@@ -81,9 +92,13 @@ Value: ../document/ICAR-CICR_Advisory Pest and Disease Management 2024.pdf
 Click **"Add"** for each variable.
 
 ### Step 5: Deploy!
-1. Railway will automatically start deploying
-2. Wait 3-5 minutes for build to complete
-3. Watch the **"Deployments"** tab for progress
+1. Go to **"Deployments"** tab
+2. Click **"Deploy"** button (top right) or **"Redeploy"**
+3. Wait 3-5 minutes for build to complete
+4. Watch the logs - you should see:
+   - ✅ Installing from `backend/requirements.txt`
+   - ✅ `uvicorn` starting
+   - ✅ "Application startup complete"
 
 ### Step 6: Get Your Backend URL
 1. Go to **"Settings"** tab
@@ -153,6 +168,19 @@ Type: "What are the main pests affecting cotton?"
 - Click **"Deployments"** → View logs
 - Look for specific error messages
 
+### Build Failed - "Installing Wrong Requirements"
+**Problem:** Railway installing from root `requirements.txt` instead of `backend/requirements.txt`
+
+**Fix:**
+1. Go to **Settings** tab
+2. Check **"Root Directory"** is set to `backend`
+3. If not, update it to `backend`
+4. Go to **"Deployments"** tab
+5. Click **"Redeploy"** button
+6. Watch logs - should now use `backend/requirements.txt`
+
+**Still failing?** Try the **Render.com alternative** below!
+
 ### Frontend "Failed to fetch"
 **Check:**
 1. Is backend URL correct in Vercel env variables?
@@ -177,6 +205,74 @@ Type: "What are the main pests affecting cotton?"
 - First request after inactivity takes 30-60 seconds
 - Subsequent requests are fast
 - **Solution:** Upgrade to paid tier or keep backend warm
+
+---
+
+## Alternative: Deploy to Render.com (If Railway Fails)
+
+Render.com is more straightforward for Python apps with specific folder structures.
+
+### Step 1: Sign Up for Render
+1. Go to https://render.com
+2. Click **"Get Started"** or **"Sign Up"**
+3. Choose **"Sign in with GitHub"**
+4. Authorize Render
+
+### Step 2: Create Web Service
+1. Click **"New +"** button (top right)
+2. Select **"Web Service"**
+3. Find and click **"Connect"** next to `pavanpavaman/Agentic-RAG-Cotton`
+
+### Step 3: Configure Service
+
+Fill in these fields:
+
+**Name:** `cotton-advisory-backend` (or any name you like)
+
+**Region:** Choose closest to you
+
+**Branch:** `main`
+
+**Root Directory:** `backend` ⚠️ IMPORTANT
+
+**Runtime:** `Python 3`
+
+**Build Command:** 
+```
+pip install -r requirements.txt
+```
+
+**Start Command:**
+```
+uvicorn main:app --host 0.0.0.0 --port $PORT
+```
+
+**Instance Type:** `Free` (select from dropdown)
+
+### Step 4: Add Environment Variables
+
+Scroll down to **"Environment Variables"** section.
+
+Click **"Add Environment Variable"** for each:
+
+1. **Key:** `GEMINI_API_KEY`, **Value:** `your_actual_api_key`
+2. **Key:** `PORT`, **Value:** `10000`
+3. **Key:** `ALLOWED_ORIGINS`, **Value:** `https://your-frontend.vercel.app`
+4. **Key:** `PYTHON_VERSION`, **Value:** `3.11.0`
+
+### Step 5: Create Web Service
+1. Click **"Create Web Service"** button at bottom
+2. Wait 3-5 minutes for deployment
+3. Watch the logs in real-time
+
+### Step 6: Get Your URL
+Once deployed, you'll see:
+- ✅ Green "Live" indicator
+- 🔗 URL at top: `https://cotton-advisory-backend.onrender.com`
+- Copy this URL!
+
+### Step 7: Connect to Frontend
+Same as Railway - update `NEXT_PUBLIC_API_URL` in Vercel to your Render URL.
 
 ---
 
